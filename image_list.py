@@ -23,7 +23,7 @@ class Image_List:
         self.root.bind("<<OpenProject>>", lambda error: self.populate_image_list())
 
     def populate_image_list(self):
-        files = os.listdir(self.project_info.project_dir + "/" + self.project_info.project_name)
+        files = os.listdir(self.project_info.project_dir)
         for i, file in enumerate(files):
             self.file_list.insert(i, file)
 

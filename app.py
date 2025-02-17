@@ -22,7 +22,7 @@ class RPi_Microscope_App:
         self.project_info = Project_Info()
 
         self.root.title("RPi Microscope")
-        self.root.geometry("200x400")
+        self.root.geometry("250x600")
 
         self.rpi_menu = RPi_Menu(self.root, self.project_info)
         self.image_list = Image_List(self.root, self.project_info)

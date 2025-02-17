@@ -56,8 +56,7 @@ class RPi_Menu:
         if(os.path.exists(dir + "/" + name)):
             messagebox.showwarning(message="File already exists!")
         else:
-            self.project_info.project_dir = dir
-            self.project_info.project_name = name
+            self.project_info.project_dir = dir + "/" + name
             os.mkdir(dir + "/" + name)
             self.root.event_generate("<<NewProject>>", when="tail")
 
@@ -67,6 +66,5 @@ class RPi_Menu:
             title="Please choose project to open"
         )
         self.project_info.project_dir = dir
-        self.project_info.project_name = ""
         self.root.event_generate("<<OpenProject>>", when="tail")
 
