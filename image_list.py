@@ -24,11 +24,14 @@ class Image_List:
         self.file_list.bind('<Button-2>', lambda error: self.right_click_window())
 
         self.root.bind("<<OpenProject>>", lambda error: self.populate_image_list())
+        self.root.bind("<<Update-FileList>>", lambda error: self.populate_image_list())
 
 
     def select_image(self):
         if(self.file_list.curselection()):
-            self.project_info.selected_image = self.file_list.get(self.file_list.curselection()[0])
+            selected_image = self.file_list.get(self.file_list.curselection()[0])
+            if(selected_image == self.project_info.selected_image): return
+            self.project_info.selected_image = selected_image
             self.root.event_generate('<<Change-Photo>>', when="tail")
 
     def populate_image_list(self):
@@ -55,9 +58,9 @@ class Image_List:
     def rename_files(self, file_indeces: list[int], text_entry: Toplevel, new_name: str):
         if(new_name == ""): return
         path = self.project_info.project_dir
-        for i in file_indeces:
+        for i, index in enumerate(file_indeces):
             print(self.file_list.get(i), i)
-            os.rename(path + "/" + self.file_list.get(i), path + "/" + new_name + "_" + str(i))
+            os.rename(path + "/" + self.file_list.get(index), path + "/" + new_name + "_" + str(i) + ".jpg")
         text_entry.destroy()
         self.populate_image_list()
 

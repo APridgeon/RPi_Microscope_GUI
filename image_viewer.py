@@ -19,8 +19,11 @@ class Image_Viewer:
         self.root.bind("<<Change-Photo>>", lambda error: self.display_photo())
 
     def display_photo(self):
+        try: self.photo_window.destroy()
+        except: pass
         self.photo_window = Toplevel(self.root)
         self.photo_window.title(self.project_info.selected_image)
+        self.project_info.photo_window = self.photo_window
 
         img = Image.open(self.project_info.project_dir + "/" + self.project_info.selected_image).convert("RGB")
         my_img = ImageTk.PhotoImage(img)
