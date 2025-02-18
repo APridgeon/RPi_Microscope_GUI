@@ -29,13 +29,13 @@ class Camera_Control:
 
         timelapse_duration = Label(self.root, text="Timelapse duration (ms): ")
         timelapse_duration.grid(row=6, column=1)
-        self.duration_entry = Entry(self.root)
+        self.duration_entry = Entry(self.root, width=6)
         self.duration_entry.insert(0, "10000")
         self.duration_entry.grid(row=6, column=2)
 
         timelapse_interval = Label(self.root, text="Timelapse interval (ms): ")
         timelapse_interval.grid(row=7, column=1)
-        self.interval_entry = Entry(self.root)
+        self.interval_entry = Entry(self.root, width=6)
         self.interval_entry.insert(0, "500")
         self.interval_entry.grid(row=7, column=2)
 
