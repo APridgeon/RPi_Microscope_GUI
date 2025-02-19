@@ -20,19 +20,75 @@ class Image_List:
         self.file_list = Listbox(self.root, height=10, selectmode="extended")
         self.file_list.grid(row=1, column=1, padx= (10, 0), pady=10)
 
-        self.file_list.bind('<Button-1>', lambda error: self.select_image())
+        self.populate_image_list()
+
+        self.file_list.bind('<Button-1>', lambda error: self.select_item())
         self.file_list.bind('<Button-2>', lambda error: self.right_click_window())
 
         self.root.bind("<<OpenProject>>", lambda error: self.populate_image_list())
         self.root.bind("<<Update-FileList>>", lambda error: self.populate_image_list())
 
 
-    def select_image(self):
+    def select_item(self):
         if(self.file_list.curselection()):
-            selected_image = self.file_list.get(self.file_list.curselection()[0])
-            if(selected_image == self.project_info.selected_image): return
-            self.project_info.selected_image = selected_image
+            selected_item = self.file_list.get(self.file_list.curselection()[0])
+            if(selected_item == self.project_info.selected_image): return     
+            path = self.project_info.project_dir + "/" + selected_item  
+            if(os.path.isdir(path)):
+                self.select_collection(selected_item, path)
+                return
+            self.project_info.selected_image = selected_item
+
             self.root.event_generate('<<Change-Photo>>', when="tail")
+
+    def select_collection(self, collection: str, path: str):
+        folder_list = Toplevel(self.root)
+        folder_list.title("Collection files")
+        folder_file_list = Listbox(folder_list, height=6, selectmode="extended")
+        folder_file_list.grid(row=0, column=0, padx=10, pady=10)
+        for i, file in enumerate(os.listdir(path)):
+            folder_file_list.insert(i, file)
+        folder_file_list.bind('<Button-1>', lambda error: self.select_collection_item(collection, folder_file_list))
+        folder_file_list.bind('<Button-2>', lambda error: self.right_click_collection_window(collection, folder_file_list))
+
+    def select_collection_item(self, collection: str, file_list: Listbox):
+        if(file_list.curselection()):
+            selected_image = file_list.get(file_list.curselection()[0])
+            if(selected_image == self.project_info.selected_image): return
+            selected_image_path = collection + "/" + selected_image
+            self.project_info.selected_image = selected_image_path
+            self.root.event_generate('<<Change-Photo>>', when="tail")
+    
+    def right_click_collection_window(self, collection: str, file_list: Listbox):
+        file_indeces = file_list.curselection()
+        if(len(file_indeces) == 0): return
+
+        text_entry = Toplevel(self.root)
+        text_entry.title("Rename")
+        rename_label = Label(text_entry, text="Rename files: ")
+        rename_label.grid(row=0, column=0)
+        rename_input = Entry(text_entry, width=10)
+        rename_input.grid(row=0, column=1)
+        cancel_button = Button(text_entry, text="Cancel", command=lambda: text_entry.destroy())
+        cancel_button.grid(row=1, column=0, )
+        ok_button = Button(text_entry, text="Ok", command=lambda: self.rename_collection_files(file_indeces, collection, file_list, text_entry, rename_input.get()))
+        ok_button.grid(row=1, column=1)
+
+    def rename_collection_files(self, file_indeces: list[int], collection: str, file_list: Listbox, text_entry: Toplevel, new_name: str):
+        if(new_name == ""): return
+        path = self.project_info.project_dir + "/" + collection
+        for i, index in enumerate(file_indeces):
+            print(file_list.get(i), i)
+            os.rename(path + "/" + file_list.get(index), path + "/" + new_name + "_" + str(i) + ".jpg")
+        text_entry.destroy()
+        self.populate_collection_list(file_list, collection)
+
+    def populate_collection_list(self, file_list: Listbox, collection: str):
+        file_list.delete(0, file_list.size())
+        collection_path = self.project_info.project_dir + "/" + collection
+        files = os.listdir(collection_path)
+        for i, file in enumerate(files):
+            file_list.insert(i, file)
 
     def populate_image_list(self):
         self.file_list.delete(0, self.file_list.size())

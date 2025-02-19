@@ -34,7 +34,6 @@ class RPi_Microscope_App:
         self.root = Tk()
 
         self.root.title("RPi Microscope")
-        self.root.geometry("300x600")
 
         self.rpi_menu = RPi_Menu(self.root, self.project_info)
         self.image_list = Image_List(self.root, self.project_info)
@@ -47,17 +46,25 @@ class RPi_Microscope_App:
 
     def startup(self):
         self.init_window = Tk()
-        self.init_window.title="Project Selection"
+        self.init_window.title("RPi Microscope Project Selection")
         label = Label(self.init_window, text="Please open a directory")
         label.grid(row=0, column=0)
         button1 = Button(self.init_window, text="New Project", command=lambda: self.open_project())
         button1.grid(row=1, column=0)
         button2 = Button(self.init_window, text="Open Project", command=lambda: self.open_project())
         button2.grid(row=1, column=1)
+
+    # TODO
+    # def new_project(self):
     
 
     def open_project(self):
         dir = filedialog.askdirectory(
+            initialdir="~",
+            title="Please choose project to open"
+        )
+        while dir == "":
+            dir = filedialog.askdirectory(
             initialdir="~",
             title="Please choose project to open"
         )
