@@ -79,7 +79,7 @@ class Image_List:
         path = self.project_info.project_dir + "/" + collection
         for i, index in enumerate(file_indeces):
             print(file_list.get(i), i)
-            os.rename(path + "/" + file_list.get(index), path + "/" + new_name + "_" + str(i) + ".jpg")
+            os.rename(path + "/" + file_list.get(index), path + "/" + new_name + "_" + str(i).zfill(4) + ".jpg")
         text_entry.destroy()
         self.populate_collection_list(file_list, collection)
 
@@ -87,12 +87,16 @@ class Image_List:
         file_list.delete(0, file_list.size())
         collection_path = self.project_info.project_dir + "/" + collection
         files = os.listdir(collection_path)
+        files.sort()
+        # files.sort(key=lambda item: os.path.getmtime(self.project_info.project_dir + "/" + collection + "/" + item))
         for i, file in enumerate(files):
             file_list.insert(i, file)
 
     def populate_image_list(self):
         self.file_list.delete(0, self.file_list.size())
         files = os.listdir(self.project_info.project_dir)
+        # files.sort(key=lambda item: os.path.getmtime(self.project_info.project_dir + "/" + item))
+        files.sort()
         for i, file in enumerate(files):
             self.file_list.insert(i, file)
 
@@ -115,8 +119,13 @@ class Image_List:
         if(new_name == ""): return
         path = self.project_info.project_dir
         for i, index in enumerate(file_indeces):
-            print(self.file_list.get(i), i)
-            os.rename(path + "/" + self.file_list.get(index), path + "/" + new_name + "_" + str(i) + ".jpg")
+            j = i
+            file_path = path + "/" + new_name + "_" + str(j).zfill(4) + ".jpg"
+            print(file_path)
+            while(os.path.isfile(file_path)):
+                j = j + 1
+                file_path = path + "/" + new_name + "_" + str(j).zfill(4) + ".jpg"
+            os.rename(path + "/" + self.file_list.get(index), path + "/" + new_name + "_" + str(j).zfill(4) + ".jpg")
         text_entry.destroy()
         self.populate_image_list()
 

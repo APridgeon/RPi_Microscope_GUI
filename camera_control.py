@@ -49,13 +49,13 @@ def start_preview():
 
 def capture_image(self: Camera_Control):
     n_of_files = len(os.listdir(self.project_info.project_dir))
-    file_name = "untitled" + str(n_of_files + 1) + '.jpg'
+    file_name = "untitled" + "_" + str(n_of_files + 1).zfill(4) + '.jpg'
     subprocess.getoutput('libcamera-jpeg --timeout 10 --width 800 --height 600 --output ' + self.project_info.project_dir + '/' + file_name)
     self.root.event_generate("<<Update-FileList>>")
 
 def capture_timelapse(self: Camera_Control):
     n_of_files = len(os.listdir(self.project_info.project_dir))
-    folder = 'Collection' + str(n_of_files+1)
+    folder = 'Collection' + "_" + str(n_of_files+1).zfill(4)
     timelapse_dir = self.project_info.project_dir + '/' + folder
     os.mkdir(timelapse_dir)
     file_name = 'untitled%04d.jpg'
