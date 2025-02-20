@@ -1,4 +1,4 @@
-from tkinter import Button, Label, Listbox, Tk, Entry, Toplevel
+from tkinter import ACTIVE, Button, Label, Listbox, Tk, Entry, Toplevel
 import os
 from current_project_info import Project_Info
 
@@ -9,6 +9,8 @@ class Image_List:
     project_info: Project_Info
 
     file_list: Listbox
+
+    folder_window: Toplevel
 
     def __init__(self, root: Tk, project_info: Project_Info):
         self.root = root
@@ -29,6 +31,7 @@ class Image_List:
         self.root.bind("<<Update-FileList>>", lambda error: self.populate_image_list())
 
 
+
     def select_item(self):
         if(self.file_list.curselection()):
             selected_item = self.file_list.get(self.file_list.curselection()[0])
@@ -42,18 +45,21 @@ class Image_List:
             self.root.event_generate('<<Change-Photo>>', when="tail")
 
     def select_collection(self, collection: str, path: str):
-        folder_list = Toplevel(self.root)
-        folder_list.title("Collection files")
-        folder_file_list = Listbox(folder_list, height=6, selectmode="extended")
+        try: self.folder_window.destroy()
+        except: pass
+        self.folder_window = Toplevel(self.root)
+        self.folder_window.title("Collection files")
+        self.folder_window.geometry('+%d+%d'%(100,30))  
+        folder_file_list = Listbox(self.folder_window, height=6, selectmode="extended")
         folder_file_list.grid(row=0, column=0, padx=10, pady=10)
-        for i, file in enumerate(os.listdir(path)):
-            folder_file_list.insert(i, file)
-        folder_file_list.bind('<Button-1>', lambda error: self.select_collection_item(collection, folder_file_list))
+        self.populate_collection_list(folder_file_list, collection)
+        folder_file_list.bind('<Double-Button-1>', lambda error: self.select_collection_item(collection, folder_file_list))
         folder_file_list.bind('<Button-2>', lambda error: self.right_click_collection_window(collection, folder_file_list))
 
     def select_collection_item(self, collection: str, file_list: Listbox):
         if(file_list.curselection()):
             selected_image = file_list.get(file_list.curselection()[0])
+            print(file_list.get(file_list.curselection()[0]))
             if(selected_image == self.project_info.selected_image): return
             selected_image_path = collection + "/" + selected_image
             self.project_info.selected_image = selected_image_path
@@ -120,12 +126,14 @@ class Image_List:
         path = self.project_info.project_dir
         for i, index in enumerate(file_indeces):
             j = i
-            file_path = path + "/" + new_name + "_" + str(j).zfill(4) + ".jpg"
+            ending = ".jpg"
+            if(os.path.isdir(path + "/" + self.file_list.get(index))): ending = ""
+            file_path = path + "/" + new_name + "_" + str(j).zfill(4) + ending
             print(file_path)
             while(os.path.isfile(file_path)):
                 j = j + 1
-                file_path = path + "/" + new_name + "_" + str(j).zfill(4) + ".jpg"
-            os.rename(path + "/" + self.file_list.get(index), path + "/" + new_name + "_" + str(j).zfill(4) + ".jpg")
+                file_path = path + "/" + new_name + "_" + str(j).zfill(4) + ending
+            os.rename(path + "/" + self.file_list.get(index), path + "/" + new_name + "_" + str(j).zfill(4) + ending)
         text_entry.destroy()
         self.populate_image_list()
 

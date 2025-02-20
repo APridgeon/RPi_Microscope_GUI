@@ -41,6 +41,9 @@ class RPi_Microscope_App:
         Camera_Control(self.root, self.project_info)
         Image_Viewer(self.root, self.project_info)
 
+
+        self.root.geometry('+%d+%d'%(10,30))  
+
         self.root.bind("<<NewProject>>", test1)
         self.root.event_generate("<<OpenProject>>", when="tail")
 
@@ -49,14 +52,25 @@ class RPi_Microscope_App:
         self.init_window.title("RPi Microscope Project Selection")
         label = Label(self.init_window, text="Please open a directory")
         label.grid(row=0, column=0)
-        button1 = Button(self.init_window, text="New Project", command=lambda: self.open_project())
+        button1 = Button(self.init_window, text="New Project", command=lambda: self.new_project())
         button1.grid(row=1, column=0)
         button2 = Button(self.init_window, text="Open Project", command=lambda: self.open_project())
         button2.grid(row=1, column=1)
 
-    # TODO
-    # def new_project(self):
-    
+    def new_project(self):
+        name = simpledialog.askstring("Project Name", "Please enter a project name and then choose a location to save")
+        dir = filedialog.askdirectory(
+            initialdir="~",
+            title="Please choose location to save"
+        )
+        if(os.path.exists(dir + "/" + name)):
+            messagebox.showwarning(message="File already exists!")
+        else:
+            self.project_info.project_dir = dir + "/" + name
+            os.mkdir(dir + "/" + name)
+        self.project_info.project_dir = dir + "/" + name
+        self.init_window.destroy()
+        self.start_main_app()
 
     def open_project(self):
         dir = filedialog.askdirectory(

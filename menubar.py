@@ -59,6 +59,7 @@ class RPi_Menu:
             self.project_info.project_dir = dir + "/" + name
             os.mkdir(dir + "/" + name)
             self.root.event_generate("<<NewProject>>", when="tail")
+            self.root.event_generate("<<Update-FileList>>")
 
     def open_project(self):
         dir = filedialog.askdirectory(
@@ -67,4 +68,5 @@ class RPi_Menu:
         )
         self.project_info.project_dir = dir
         self.root.event_generate("<<OpenProject>>", when="tail")
+        self.root.event_generate("<<Update-FileList>>")
 
